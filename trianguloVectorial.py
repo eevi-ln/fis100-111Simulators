@@ -167,7 +167,7 @@ def trianguloDesplazamiento(vi, angv):
     viy = vi * math.sin(math.radians(angv))
 
     grav = 10   # gravedad redondeada
-    dt = 1      # delta tiempo
+    dt = 2.5      # delta tiempo
 
     velocidad = FancyArrowPatch((0, 0), 
                                 (vix*dt, viy*dt), 
@@ -204,9 +204,9 @@ def trianguloDesplazamiento(vi, angv):
     ax.spines[['top', 'right']].set_visible(False)
     
     ax.set(xlim=(0,vix*dt * 1.05),
-            ylim=(-grav*dt**2 * 1.05,viy*dt * 1.05), 
+            ylim=(viy*dt -grav*dt**2 * 1.05,viy*dt * 1.05), 
             xticks=[vix*dt])
-    ax.spines.bottom.set_position(('axes', (grav*dt**2) / (grav*dt**2 + viy*dt)))
+    ax.spines.bottom.set_position(('axes', (viy*dt -grav*dt**2) / (grav*dt**2 + viy*dt)))
     plt.show()
 
 trianguloDesplazamiento(20, 30)
