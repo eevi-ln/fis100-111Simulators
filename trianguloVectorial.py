@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch
 from matplotlib.text import Annotation
+
 import math
 
 #funcion AngleAnnotation de la página de ejemplos
@@ -158,7 +159,11 @@ class AngleAnnotation(Arc):
 # un proyectil es lanzado a una velocidad inicial vi, con un angulo de angv,
 # recorre una distancia d, a lo largo de un tiempo dt.
 
-def trianguloDesplazamiento(vi, angv):
+def trianguloDesplazamiento(vi, angv, tf, 
+                            mostrarAngulo=False, 
+                            mostrarDesplazamientoX=False, 
+                            mostrarDesplazamientoY=False,
+                            mostrarDesplazamiento=False):
     # vi    : velocidad inicial en [m/s]
     # angv  : angulo del vector velocidad inicial en deg
     fig, ax = plt.subplots()
@@ -167,46 +172,75 @@ def trianguloDesplazamiento(vi, angv):
     viy = vi * math.sin(math.radians(angv))
 
     grav = 10   # gravedad redondeada
-    dt = 2.5      # delta tiempo
+    dt = tf      # delta tiempo
+
 
     velocidad = FancyArrowPatch((0, 0), 
                                 (vix*dt, viy*dt), 
                                 color='xkcd:cobalt blue', 
                                 mutation_scale=20)
-    ax.annotate(r'$\vec{v_0} \Delta t$', xy=(vix*dt/2, viy*dt/2))
-
+    ax.annotate(r'$\vec{v}_0 \Delta t$', 
+                xy=(vix*dt/2, viy*dt/2),
+                xytext=(-25,7),
+                textcoords="offset points",
+                fontsize=12)
+    
     aceleracion = FancyArrowPatch((vix*dt,viy*dt),
                                 (vix*dt, viy * dt - grav * dt**2),
                                 color='xkcd:scarlet',
                                 mutation_scale=20)
-    ax.annotate(r'$\vec{g} \Delta t^2$',xy=(vix*dt, (viy * dt - (grav / 2) * dt**2)))
+    ax.annotate(r'$\vec{g} \Delta t^2$',
+                xy=(vix*dt, (viy * dt - (grav / 2) * dt**2)),
+                xytext=(7,0),
+                textcoords="offset points",
+                fontsize=12)
 
     desplazamiento = FancyArrowPatch((0, 0),
                                      (vix*dt, viy * dt - grav*dt**2),
                                      color='xkcd:steel grey',
                                      mutation_scale=20)
-    ax.annotate(r'$\vec{D}$',(vix*dt/2,(viy * dt - grav*dt**2)/2), textcoords="offset points")
-    #velocidad = FancyArrow(0, 0, vix, viy, width=0.4, color='r', length_includes_head=True)
+    ax.annotate(r'$\vec{D}$',
+                (vix*dt/2,(viy * dt - grav*dt**2)/2),
+                xytext=(-25,-15), 
+                textcoords="offset points",
+                fontsize=12)
 
 
-    AngleAnnotation((0,0), 
-                    (vix*dt,0), 
-                    (vix*dt,viy*dt),
-                    size=300, 
-                    ax=ax, text=str(angv)+'°',
-                    textposition='outside',
-                    unit="pixels")
 
-    ax.axhline(0, 0, vix * dt / 10 , ls='--')
+    ax.hlines(0,0,vix * dt, ls='--')
     ax.add_patch(velocidad)
     ax.add_patch(aceleracion)
     ax.add_patch(desplazamiento)
+
+    ax.set_aspect('equal')
     ax.spines[['top', 'right']].set_visible(False)
     
+
+
     ax.set(xlim=(0,vix*dt * 1.05),
-            ylim=(viy*dt -grav*dt**2 * 1.05,viy*dt * 1.05), 
-            xticks=[vix*dt])
-    ax.spines.bottom.set_position(('axes', (viy*dt -grav*dt**2) / (grav*dt**2 + viy*dt)))
+           ylim=(viy*dt -grav*dt**2 * 1.05,viy*dt * 1.05))
+           
+    ax.spines.bottom.set_position(('axes', 0))
+
+    # Agregando informacion para estudiante
+
+    if mostrarAngulo:
+        AngleAnnotation((0,0), 
+                        (vix*dt,0), 
+                        (vix*dt,viy*dt),
+                        size=100*vix*dt*0.05, 
+                        ax=ax, text=str(angv)+'°',
+                        textposition='inside',
+                        unit="pixels")    
+
+    if mostrarDesplazamientoX: ax.set_xticks([vix*dt])
+    else: ax.set_xticks([])
+    if mostrarDesplazamientoY: ax.set_yticks([viy*dt -grav*dt**2, 0, viy*dt])
+    else: ax.set_yticks([])
+
+    ###
+
+    fig.set_figheight(7)
     plt.show()
 
-trianguloDesplazamiento(20, 30)
+trianguloDesplazamiento(25, 30, 3)
