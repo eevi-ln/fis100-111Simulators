@@ -193,7 +193,7 @@ def trianguloDesplazamiento(vi, angv, tf,
                 xy=(vix*dt, (viy * dt - (grav / 2) * dt**2)),
                 xytext=(7,0),
                 textcoords="offset points",
-                fontsize=12)
+            fontsize=12)
 
     desplazamiento = FancyArrowPatch((0, 0),
                                      (vix*dt, viy * dt - grav*dt**2),
@@ -241,6 +241,8 @@ def trianguloDesplazamiento(vi, angv, tf,
     ###
 
     fig.set_figheight(7)
+    fig.savefig("test.png")
+
     plt.show()
 
-trianguloDesplazamiento(25, 30, 3)
+trianguloDesplazamiento(25, 30, 3, True, True, True, True)

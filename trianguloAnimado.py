@@ -23,15 +23,15 @@ def init():
 xdata, ydata = [], []
 
 def animate(i):
-    t = 0.1 * i
+    t = 0.01 * i
 
     x = t * vix
-    y = -grav*t**2 + t*viy - dy
+    y = -grav/2 *t**2 + t*viy - dy
 
     xdata.append(x)
     ydata.append(y)
 
-    line.set_data(xdata, ydata)
+    line.set_data(xdata, ydata) 
 
     return line,
 
@@ -39,7 +39,7 @@ anim = animation.FuncAnimation(fig,
                                animate,
                                init_func=init,
                                frames=120,
-                               interval=20,
+                               interval=50,
                                repeat=True)
 
 plt.show()
