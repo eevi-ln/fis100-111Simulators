@@ -6,11 +6,52 @@ from matplotlib.patches import Polygon
 
 import numpy as np
 
+def cambiosVelocidad(cambiosAceleracion, vi=0):
+    aceleraciones = dict(cambiosAceleracion)
 
-def generarGraficosMRUA(cambiosAceleracion, vi=0, mostrarAreas=False, unidadD='m', unidadT='s'):
-    graficaVT(cambiosAceleracion, vi, mostrarAreas, unidadD, unidadT)
-    graficaAT(cambiosAceleracion, mostrarAreas, unidadD, unidadT)
+    dv = vi
+
+    tiempos = []
     
+    velocidades = [dv]
+
+    
+    for intervalo in aceleraciones:
+        ti = float(intervalo.split('-')[0])
+        tf = float(intervalo.split('-')[1])
+
+        if ti not in  tiempos: tiempos.append(ti)
+        tiempos.append(tf)
+
+        dv += (tf - ti) * aceleraciones[intervalo]
+        velocidades.append(dv)
+
+    print(tiempos)
+    print(velocidades)
+
+def generarGraficosMRUA(cambiosAceleracion, vi=0, mostrarDatos=False, unidadD='m', unidadT='s'):
+    
+    #estroboscopico(cambiosAceleracion, vi, mostrarDatos, unidadD, unidadT)
+    graficaVT(cambiosAceleracion, vi, mostrarDatos, unidadD, unidadT)
+    graficaAT(cambiosAceleracion, mostrarDatos, unidadD, unidadT)
+    tiempos = cambiosAceleracion.keys()
+    """
+    for intervalo in tiempos:
+        intervalo.split('-')
+    for tiempo in cambiosAceleracion:
+
+        if cambiosAceleracion[tiempo] != 0: 
+            mrua=True
+            dt= tiempo
+
+    if not mrua:
+        graficaDT(vi, mostrarAreas, unidadD, unidadT)
+    """
+
+#def estroboscopico(cambiosAceleracion, vi=0, mostrarDatos=False, unidadD='m', unidadT='s'):
+
+#def graficaDT(t='0-0',vi=0, unidadD="m", unidadT="s"):
+
 def graficaVT(cambiosAceleracion, vi=0, mostrarAreas=False, unidadD="m",unidadT="s"):
     n = 0
     fig, ax = plt.subplots()
@@ -110,8 +151,7 @@ def graficaAT(cambiosAceleracion, mostrarAreas=False, unidadD="m", unidadT="s"):
     #plt.show()
 
 
-testing = {'0-5': 1, '5-7': 0, '7-10': -3}
-generarGraficosMRUA(testing, mostrarAreas=True)
-
-graficaVT(testing, mostrarAreas=True)
-#graficaAT(testing, True)
+testing1 = {'0-5': 1, '5-7': 0, '7-10': -3}
+testing2 = {'0-10': 0}
+generarGraficosMRUA(testing1, vi= 20, mostrarDatos=True)
+cambiosVelocidad(testing1, vi=20)
