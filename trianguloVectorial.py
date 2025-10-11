@@ -45,7 +45,7 @@ class AngleAnnotation(Arc):
 
         textposition : {"inside", "outside", "edge"}
             Whether to show the text in- or outside the arc. "edge" can be used
-            for custom positions anchored at the arc's edge.
+            for custom positions anchored at the arc"s edge.
 
         text_kw : dict
             Dictionary of arguments passed to the Annotation.
@@ -177,9 +177,9 @@ def trianguloDesplazamiento(vi, angv, tf,
 
     velocidad = FancyArrowPatch((0, 0), 
                                 (vix*dt, viy*dt), 
-                                color='xkcd:cobalt blue', 
+                                color="xkcd:cobalt blue", 
                                 mutation_scale=20)
-    ax.annotate(r'$\vec{v}_0 \Delta t$', 
+    ax.annotate(r"$\vec{v}_0 \Delta t$", 
                 xy=(vix*dt/2, viy*dt/2),
                 xytext=(-25,7),
                 textcoords="offset points",
@@ -187,9 +187,9 @@ def trianguloDesplazamiento(vi, angv, tf,
     
     aceleracion = FancyArrowPatch((vix*dt,viy*dt),
                                 (vix*dt, viy * dt - grav * dt**2),
-                                color='xkcd:scarlet',
+                                color="xkcd:scarlet",
                                 mutation_scale=20)
-    ax.annotate(r'$\vec{g} \Delta t^2$',
+    ax.annotate(r"$\vec{g} \Delta t^2$",
                 xy=(vix*dt, (viy * dt - (grav / 2) * dt**2)),
                 xytext=(7,0),
                 textcoords="offset points",
@@ -197,9 +197,9 @@ def trianguloDesplazamiento(vi, angv, tf,
 
     desplazamiento = FancyArrowPatch((0, 0),
                                      (vix*dt, viy * dt - grav*dt**2),
-                                     color='xkcd:steel grey',
+                                     color="xkcd:steel grey",
                                      mutation_scale=20)
-    ax.annotate(r'$\vec{D}$',
+    ax.annotate(r"$\vec{D}$",
                 (vix*dt/2,(viy * dt - grav*dt**2)/2),
                 xytext=(-25,-15), 
                 textcoords="offset points",
@@ -207,20 +207,20 @@ def trianguloDesplazamiento(vi, angv, tf,
 
 
 
-    ax.hlines(0,0,vix * dt, ls='--')
+    ax.hlines(0,0,vix * dt, ls="--")
     ax.add_patch(velocidad)
     ax.add_patch(aceleracion)
     ax.add_patch(desplazamiento)
 
-    ax.set_aspect('equal')
-    ax.spines[['top', 'right']].set_visible(False)
+    ax.set_aspect("equal")
+    ax.spines[["top", "right"]].set_visible(False)
     
 
 
     ax.set(xlim=(0,vix*dt * 1.05),
            ylim=(viy*dt -grav*dt**2 * 1.05,viy*dt * 1.05))
            
-    ax.spines.bottom.set_position(('axes', 0))
+    ax.spines.bottom.set_position(("axes", 0))
 
     # Agregando informacion para estudiante
 
@@ -229,8 +229,8 @@ def trianguloDesplazamiento(vi, angv, tf,
                         (vix*dt,0), 
                         (vix*dt,viy*dt),
                         size=100*vix*dt*0.05, 
-                        ax=ax, text=str(angv)+'°',
-                        textposition='inside',
+                        ax=ax, text=str(angv)+"°",
+                        textposition="inside",
                         unit="pixels")    
 
     if mostrarDesplazamientoX: ax.set_xticks([vix*dt])
