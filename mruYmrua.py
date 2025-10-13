@@ -54,12 +54,17 @@ def cambiosVelocidad(cambiosAceleracion, vi=0):
 
     return {"tiempos": tiempos, "velocidades": velocidades}
 
-def generarGraficosMRUA(cambiosAceleracion, xi=0, vi=0, mostrarDatos=False, unidadD="m", unidadT="s"):
+def generarGraficosMRUA(cambiosAceleracion, xi=0, vi=0, mostrarDatos=False, unidadD="m", unidadT="s", testing=False):
     #estroboscopico(cambiosAceleracion, xi, vi, mostrarDatos, unidadD, unidadT)
-    graficaVT(cambiosAceleracion, vi, mostrarDatos, unidadD, unidadT)
-    graficaAT(cambiosAceleracion, mostrarDatos, unidadD, unidadT)
+    mrua = False
+    for intervalo in cambiosAceleracion:
+        if cambiosAceleracion[intervalo] != 0: mrua = True
 
-"""def estroboscopico(cambiosAceleracion, vi=0, mostrarDatos=False, unidadD="m", unidadT="s"):
+    if not mrua: grafDt = graficaDT(cambiosAceleracion, xi, vi, mostrarDatos, unidadD, unidadT, testing)
+    grafVt = graficaVT(cambiosAceleracion, vi, mostrarDatos, unidadD, unidadT, testing)
+    grafAt = graficaAT(cambiosAceleracion, mostrarDatos, unidadD, unidadT, testing)
+
+"""def estroboscopico(cambiosAceleracion, xi=0, vi=0, mostrarDatos=False, unidadD="m", unidadT="s"):
     fig, ax = plt.subplots()
     ax.spines.top.set(visible=False)
     ax.spines.left.set(visible=False)
@@ -74,10 +79,27 @@ def generarGraficosMRUA(cambiosAceleracion, xi=0, vi=0, mostrarDatos=False, unid
 
         if tf - ti != 1:"""
 
-def graficaVT(cambiosAceleracion, vi=0, mostrarAreas=False, unidadD="m", unidadT="s"):
+
+def graficaDT(cambiosAceleracion, xi=0, vi=0, mostrarDatos=False, unidadD="m", unidadT="s", testing=False):
     fig, ax = plt.subplots()
-    ax.set_ylabel(f"velocidad [{unidadD}/{unidadT}]")
-    ax.set_xlabel(f"tiempo [{unidadT}]")
+    ax.set_ylabel(f"posición: x [{unidadD}]")
+    ax.set_xlabel(f"tiempo: t [{unidadT}]")
+    ax.spines.top.set(visible=False)
+    ax.spines.right.set(visible=False)
+    ax.spines.bottom.set(position=("data", 0))
+
+    tiempos = cambiosPosicion(cambiosAceleracion, vi, xi)["tiempos"]
+    posiciones = cambiosPosicion(cambiosAceleracion, vi, xi)["posiciones"]
+
+    ax.plot(tiempos, posiciones)
+
+    fig.savefig("mruaDT.png")
+    if testing: plt.show()
+
+def graficaVT(cambiosAceleracion, vi=0, mostrarAreas=False, unidadD="m", unidadT="s", testing=False):
+    fig, ax = plt.subplots()
+    ax.set_ylabel(f"velocidad: v [{unidadD}/{unidadT}]")
+    ax.set_xlabel(f"tiempo: t [{unidadT}]")
     ax.spines.top.set(visible=False)
     ax.spines.right.set(visible=False)
     ax.spines.bottom.set(position=("data", 0))
@@ -105,13 +127,15 @@ def graficaVT(cambiosAceleracion, vi=0, mostrarAreas=False, unidadD="m", unidadT
         i+=1
 
     ax.plot(tiempos, velocidades, color="xkcd:cobalt blue")
+    
     fig.savefig("mruaVT.png")
+    if testing: plt.show()
 
-def graficaAT(cambiosAceleracion, mostrarAreas=False, unidadD="m", unidadT="s"):
+def graficaAT(cambiosAceleracion, mostrarAreas=False, unidadD="m", unidadT="s", testing=False):
     i = 0
     fig, ax = plt.subplots()
-    ax.set_ylabel(r"aceleración [{0}/${1}^2$]".format(unidadD, unidadT))
-    ax.set_xlabel(f"tiempo [{unidadT}]")
+    ax.set_ylabel(r"aceleración: a [{0}/${1}^2$]".format(unidadD, unidadT))
+    ax.set_xlabel(f"tiempo: t [{unidadT}]")
     ax.spines.top.set(visible=False)
     ax.spines.right.set(visible=False)
     ax.spines.bottom.set(position=("data", 0))
@@ -134,8 +158,9 @@ def graficaAT(cambiosAceleracion, mostrarAreas=False, unidadD="m", unidadT="s"):
             ax.vlines(tf, 0, cambiosAceleracion[intervalo], colors="gainsboro", ls="--")
 
     fig.savefig("mruaAT.png")
+    if testing: plt.show()
 
 testing1 = {"0-5": 1, "5-7": 0, "7-10": -2, "10-14": 0.5}
 testing2 = {"0-10": 0}
 
-generarGraficosMRUA(testing1, mostrarDatos=True)
+generarGraficosMRUA(testing2, 0, 5, mostrarDatos=True, testing=True)
