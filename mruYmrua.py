@@ -90,7 +90,9 @@ def graficaDT(cambiosAceleracion, xi=0, vi=0, mostrarDatos=False, unidadD="m", u
 
     tiempos = cambiosPosicion(cambiosAceleracion, vi, xi)["tiempos"]
     posiciones = cambiosPosicion(cambiosAceleracion, vi, xi)["posiciones"]
-
+    
+    ax.set_xticks(tiempos)
+    ax.set_yticks(posiciones)
     ax.plot(tiempos, posiciones)
 
     fig.savefig("mruaDT.png")
@@ -126,6 +128,8 @@ def graficaVT(cambiosAceleracion, vi=0, mostrarAreas=False, unidadD="m", unidadT
             ax.vlines(tiempos[i], 0, velocidades[i], colors="gainsboro", ls="--")
         i+=1
 
+    ax.set_xticks(tiempos)
+    ax.set_yticks(velocidades)
     ax.plot(tiempos, velocidades, color="xkcd:cobalt blue")
     
     fig.savefig("mruaVT.png")
@@ -157,10 +161,12 @@ def graficaAT(cambiosAceleracion, mostrarAreas=False, unidadD="m", unidadT="s", 
             ax.vlines(ti, 0, cambiosAceleracion[intervalo], colors="gainsboro", ls="--")
             ax.vlines(tf, 0, cambiosAceleracion[intervalo], colors="gainsboro", ls="--")
 
+    ax.set_xticks(cambiosPosicion(cambiosAceleracion)["tiempos"])
+    ax.set_yticks(list(cambiosAceleracion.values()))
     fig.savefig("mruaAT.png")
     if testing: plt.show()
 
 testing1 = {"0-5": 1, "5-7": 0, "7-10": -2, "10-14": 0.5}
 testing2 = {"0-10": 0}
 
-generarGraficosMRUA(testing2, 0, 5, mostrarDatos=True, testing=True)
+generarGraficosMRUA(testing1, 0, mostrarDatos=True)
