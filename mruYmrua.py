@@ -75,6 +75,7 @@ def estroboscopico(cambiosAceleracion, xi=0, vi=0, mostrarDatos=False, unidadD="
     aceleracones = cambiosAceleracion.values()
     tiemposMapeados = np.linspace(tiempos[0], tiempos[-1], len(cambiosAceleracion)*4, endpoint=True).tolist()
 
+    dt = tiemposMapeados[1] - tiemposMapeados[0]
     velocidadesMapeadas = []
     aceleracionesMapeadas = []
 
@@ -85,18 +86,19 @@ def estroboscopico(cambiosAceleracion, xi=0, vi=0, mostrarDatos=False, unidadD="
             t1 = float(intervalo.split("-")[0])
             t2 = float(intervalo.split("-")[1])
 
-            print(tiemposMapeados[i])
-            print(t1)
-            print(t2)
-
             if tiemposMapeados[i] >= t1 and tiemposMapeados[i] <= t2:
                 aceleracionesMapeadas.append(cambiosAceleracion[intervalo])
-                print("true")
         i += 1
 
+    vf = vi
+    for aceleracion in aceleracionesMapeadas:
+        vf += aceleracion * dt
+        velocidadesMapeadas.append(vf)
+
     print(tiemposMapeados)
+    print(velocidadesMapeadas)
     print(aceleracionesMapeadas)
-    
+
     plt.show()
 
 
@@ -193,5 +195,5 @@ def graficaAT(cambiosAceleracion, mostrarDatos=False, unidadD="m", unidadT="s", 
 testing1 = {"0-5": 1, "5-7": 0, "7-10": -2, "10-12": 0.5}
 testing2 = {"0-10": 0}
 
-generarGraficosMRUA(testing1, 0, mostrarDatos=False)
+#generarGraficosMRUA(testing1, 0, mostrarDatos=False)
 estroboscopico(testing1)
