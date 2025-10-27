@@ -229,9 +229,9 @@ def trianguloDesplazamiento(vi, angv, tf,
                         (vix*dt,0), 
                         (vix*dt,viy*dt),
                         size=100*vix*dt*0.05, 
-                        ax=ax, text=str(angv)+"°",
-                        textposition="inside",
-                        unit="pixels")    
+                        ax=ax, text=str(angv)+"°", 
+                        textposition="inside", 
+                        unit="pixels")
 
     if mostrarDesplazamientoX: ax.set_xticks([vix*dt])
     else: ax.set_xticks([])
