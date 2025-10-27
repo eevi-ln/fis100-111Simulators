@@ -1,6 +1,5 @@
-from matplotlib.patches import FancyArrowPatch
 import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
+from matplotlib.patches import FancyArrowPatch
 from matplotlib.patches import Rectangle
 from matplotlib.patches import Polygon
 
@@ -54,17 +53,20 @@ def cambiosVelocidad(cambiosAceleracion, vi=0):
 
     return {"tiempos": tiempos, "velocidades": velocidades}
 
-def generarGraficosMRUA(cambiosAceleracion, xi=0, vi=0, mostrarDatos=False, unidadD="m", unidadT="s", testing=False):
+def generarGraficosMRUA(cambiosAceleracion, xi=0, vi=0, mostrarDatos=False, unidadD="m", unidadT="s", testing=False, n=""):
     #estroboscopico(cambiosAceleracion, xi, vi, mostrarDatos, unidadD, unidadT)
     mrua = False
+    genEstrob = True
     for intervalo in cambiosAceleracion:
         if cambiosAceleracion[intervalo] != 0: mrua = True
+        if cambiosAceleracion[intervalo] < 0: genEstrob = False
 
-    if not mrua: grafDt = graficaDT(cambiosAceleracion, xi, vi, mostrarDatos, unidadD, unidadT, testing)
-    grafVt = graficaVT(cambiosAceleracion, vi, mostrarDatos, unidadD, unidadT, testing)
-    grafAt = graficaAT(cambiosAceleracion, mostrarDatos, unidadD, unidadT, testing)
+    if not mrua: grafDt = graficaDT(cambiosAceleracion, xi, vi, mostrarDatos, unidadD, unidadT, testing, n)
+    graficaVT(cambiosAceleracion, vi, mostrarDatos, unidadD, unidadT, testing, n)
+    graficaAT(cambiosAceleracion, mostrarDatos, unidadD, unidadT, testing, n)
+    if genEstrob: estroboscopico(cambiosAceleracion, mostrarDatos, unidadT, n)
 
-def estroboscopico(cambiosAceleracion, xi=0, vi=0, mostrarDatos=False, unidadD="m", unidadT="s"):
+def estroboscopico(cambiosAceleracion, mostrarDatos=False, unidadT="s", n=""):
     fig, ax = plt.subplots()
     ax.spines.top.set(visible=False)
     ax.spines.left.set(visible=False)
@@ -75,35 +77,46 @@ def estroboscopico(cambiosAceleracion, xi=0, vi=0, mostrarDatos=False, unidadD="
     aceleracones = cambiosAceleracion.values()
     tiemposMapeados = np.linspace(tiempos[0], tiempos[-1], len(cambiosAceleracion)*4, endpoint=True).tolist()
 
-    dt = tiemposMapeados[1] - tiemposMapeados[0]
+    posicionesMapeadas = []
     velocidadesMapeadas = []
     aceleracionesMapeadas = []
+    aceleracionesMapeadasDict = {}
 
-    i = 0
+    i = 1
+    
     while i < len(tiemposMapeados):
         for intervalo in cambiosAceleracion:
 
             t1 = float(intervalo.split("-")[0])
             t2 = float(intervalo.split("-")[1])
 
-            if tiemposMapeados[i] >= t1 and tiemposMapeados[i] <= t2:
+            if tiemposMapeados[i-1] >= t1 and tiemposMapeados[i-1] <= t2:
+                aceleracionesMapeadasDict["{0}-{1}".format(tiemposMapeados[i-1], tiemposMapeados[i])] = cambiosAceleracion[intervalo]
                 aceleracionesMapeadas.append(cambiosAceleracion[intervalo])
         i += 1
 
-    vf = vi
-    for aceleracion in aceleracionesMapeadas:
-        vf += aceleracion * dt
-        velocidadesMapeadas.append(vf)
+    velocidadesMapeadas = cambiosVelocidad(aceleracionesMapeadasDict)["velocidades"][:-1]
 
-    print(tiemposMapeados)
-    print(velocidadesMapeadas)
-    print(aceleracionesMapeadas)
+    j = 1
+    sum=velocidadesMapeadas[0]
+    while j < len(velocidadesMapeadas):
+        sum +=velocidadesMapeadas[j-1]
+        ax.add_patch(FancyArrowPatch((sum, 0.05), 
+                                     (sum + velocidadesMapeadas[j], 0.05), 
+                                     color="xkcd:cobalt blue",
+                                     mutation_scale=10))
+        ax.add_patch(FancyArrowPatch((sum, 0.1),
+                                     (sum + aceleracionesMapeadas[j]*tiemposMapeados[1], 0.1),
+                                     color="xkcd:scarlet",
+                                     mutation_scale=10))
+        j += 1
 
-    plt.show()
+    ax.set(xlim=(velocidadesMapeadas[0], sum + velocidadesMapeadas[-1]),
+           ylim=(-0.1, 0.5))
+    fig.set_figheight(3)
+    fig.savefig("estroboscopico{0}.png".format(n))
 
-
-
-def graficaDT(cambiosAceleracion, xi=0, vi=0, mostrarDatos=False, unidadD="m", unidadT="s", testing=False):
+def graficaDT(cambiosAceleracion, xi=0, vi=0, mostrarDatos=False, unidadD="m", unidadT="s", testing=False, n=""):
     fig, ax = plt.subplots()
     ax.set_ylabel(f"posición: x [{unidadD}]")
     ax.set_xlabel(f"tiempo: t [{unidadT}]")
@@ -119,10 +132,10 @@ def graficaDT(cambiosAceleracion, xi=0, vi=0, mostrarDatos=False, unidadD="m", u
         ax.set_yticks(posiciones)
     ax.plot(tiempos, posiciones)
 
-    fig.savefig("mruaDT.png")
+    fig.savefig("mruaDT{0}.png".format(n))
     if testing: plt.show()
 
-def graficaVT(cambiosAceleracion, vi=0, mostrarDatos=False, unidadD="m", unidadT="s", testing=False):
+def graficaVT(cambiosAceleracion, vi=0, mostrarDatos=False, unidadD="m", unidadT="s", testing=False, n=""):
     fig, ax = plt.subplots()
     ax.set_ylabel(f"velocidad: v [{unidadD}/{unidadT}]")
     ax.set_xlabel(f"tiempo: t [{unidadT}]")
@@ -157,10 +170,10 @@ def graficaVT(cambiosAceleracion, vi=0, mostrarDatos=False, unidadD="m", unidadT
         ax.set_yticks(velocidades)
     ax.plot(tiempos, velocidades, color="xkcd:cobalt blue")
     
-    fig.savefig("mruaVT.png")
+    fig.savefig("mruaVT{0}.png".format(n))
     if testing: plt.show()
 
-def graficaAT(cambiosAceleracion, mostrarDatos=False, unidadD="m", unidadT="s", testing=False):
+def graficaAT(cambiosAceleracion, mostrarDatos=False, unidadD="m", unidadT="s", testing=False, n=""):
     i = 0
     fig, ax = plt.subplots()
     ax.set_ylabel(r"aceleración: a [{0}/${1}^2$]".format(unidadD, unidadT))
@@ -189,11 +202,16 @@ def graficaAT(cambiosAceleracion, mostrarDatos=False, unidadD="m", unidadT="s", 
     if mostrarDatos:
         ax.set_xticks(cambiosPosicion(cambiosAceleracion)["tiempos"])
         ax.set_yticks(list(cambiosAceleracion.values()))
-    fig.savefig("mruaAT.png")
+    fig.savefig("mruaAT{0}.png".format(n))
     if testing: plt.show()
 
-testing1 = {"0-5": 1, "5-7": 0, "7-10": -2, "10-12": 0.5}
+testing1 = {"0-5": 1, "5-7": 0, "7-10": 2}
 testing2 = {"0-10": 0}
+testing3 = {"0-5": 1, "5-10": 0}
 
-#generarGraficosMRUA(testing1, 0, mostrarDatos=False)
-estroboscopico(testing1)
+tests = [testing1, testing2, testing3]
+
+i  = 0
+while i < len(tests):
+    generarGraficosMRUA(tests[i], n=str(i))
+    i += 1
